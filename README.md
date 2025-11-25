@@ -14,7 +14,7 @@ Arduino software
 Jumper Wires
 
 # Circuit Diagram:
-<img width="1037" height="610" alt="image" src="https://github.com/user-attachments/assets/e00ccea7-f392-42f5-aa51-a3954e0615c3" />
+<img width="1038" height="574" alt="image" src="https://github.com/user-attachments/assets/6d8fba63-835b-4898-ba4d-18b4409dcbfa" />
 
 
 # Theory: 
@@ -28,8 +28,9 @@ When we apply an active high signal to the signal pin of the relay module from a
 
 # Program:
 ```
-#include<Servo.h>
-#include<LiquidCrystal.h>
+#include <Servo.h>
+#include <LiquidCrystal.h>
+
 LiquidCrystal lcd(A1,10,9,6,5,3);
 float value;
 int tmp = A0;
@@ -37,40 +38,24 @@ const int pingPin = 7;
 int servoPin = 8;
 
 Servo servo1;
-void setup() 
-{
+
+void setup() {
   Serial.begin(9600);
   servo1.attach(servoPin);
   lcd.begin(16, 2);
-  pinMode(2,INPUT);
-  pinMode(4,OUTPUT);
-  pinMode(11,OUTPUT);
-  //pinMode(10,INPUT);
-  //pinMode(2,OUTPUT);
-  //pinMode(8,OUTPUT);
-  //pinMode(9,output);
-  //pinMode(11,OUTPUT);
-  //pinMode(13,OUTPUT);
-  //pinMode(14,OUTPUT);
-  
-  pinMode(12,OUTPUT);
-  pinMode(13,OUTPUT);
-  pinMode(A0,INPUT);
-  digitalWrite(2,LOW);
-  digitalWrite(11,HIGH);
-  //digitalWrite(5,OUTPUT);
-  digitalWrite(3,OUTPUT);
-  digitalWrite(7,OUTPUT);
-  digitalWrite(11,OUTPUT);
-  digitalWrite(13,OUTPUT);
-  //digitalWrite(A0,OUTPUT);
+
+  pinMode(2, INPUT);    // PIR sensor
+  pinMode(4, OUTPUT);   // PIR LED
+  pinMode(11, OUTPUT);  // General LED
+  pinMode(12, OUTPUT);  // Temp HIGH LED
+  pinMode(13, OUTPUT);  // Temp LOW LED
+  pinMode(A0, INPUT);   // Temperature sensor
 }
 
-void loop() 
-{
-  
-  long duration, inches, cm;
+void loop() {
+  long duration, cm;
 
+  // Ultrasonic
   pinMode(pingPin, OUTPUT);
   digitalWrite(pingPin, LOW);
   delayMicroseconds(2);
@@ -78,81 +63,57 @@ void loop()
   delayMicroseconds(5);
   digitalWrite(pingPin, LOW);
 
-  
   pinMode(pingPin, INPUT);
   duration = pulseIn(pingPin, HIGH);
-
-  
-  inches = microsecondsToInches(duration);
   cm = microsecondsToCentimeters(duration);
-  
-  servo1.write(0);
-  
-  if(cm < 40)
-  {
+
+  if(cm < 40) {
     servo1.write(90);
     lcd.setCursor(0,1);
-    lcd.print("Door:OPEN");
-    
-  }
-  else
-  {
+    lcd.print("Door:OPEN   ");
+  } else {
     servo1.write(0);
     lcd.setCursor(0,1);
-    lcd.print("Door:CLOSED");
-    
+    lcd.print("Door:CLOSED ");
   }
-  
- 
+
+  // PIR sensor LED
   int pir = digitalRead(2);
-  
-  if(pir == HIGH)
-  {
-    digitalWrite(4,HIGH);
+  if(pir == HIGH) {
+    digitalWrite(4, HIGH);
     lcd.setCursor(10,0);
-    lcd.print("LED:ON");
-   // delay(500);
+    lcd.print("LED:ON ");
+  } else {
+    digitalWrite(4, LOW);
+    lcd.setCursor(10,0);
+    lcd.print("LED:OFF");
   }
-  else if(pir == LOW)
-     lcd.setCursor(12,0);
-    lcd.print("OFF");
-  {
-    digitalWrite(4,LOW);
-  }
-  
- value = analogRead(tmp)*0.004882814;
+
+  // Temperature
+  value = analogRead(tmp) * 0.004882814;
   value = (value - 0.5) * 100.0;
   lcd.setCursor(0,0);
-	lcd.print("Tmp:");
-  	lcd.print(value);
-  	delay(1000);
-  	
-  
-  Serial.println("temperature");
-  Serial.println(value);
-  
-  if(value > 20)
-  {
-    digitalWrite(12,HIGH);
-    digitalWrite(13,LOW);
-  }
-  else
-  {
-    digitalWrite(12,LOW);
-    digitalWrite(13,LOW);
-  }
-  lcd.clear();
-}
+  lcd.print("Tmp:");
+  lcd.print(value);
 
-long microsecondsToInches(long microseconds) {
-  return microseconds / 74 / 2;
+  Serial.print("temperature: ");
+  Serial.println(value);
+
+  if(value > 20) {
+    digitalWrite(12, HIGH);  // Hot LED ON
+    digitalWrite(13, LOW);
+  } else {
+    digitalWrite(12, LOW);
+    digitalWrite(13, HIGH);  // Cold LED ON
+  }
+
+  delay(500);
 }
 
 long microsecondsToCentimeters(long microseconds) {
   return microseconds / 29 / 2;
 }
 ```
-
 
 # Procedure:
 •	Make the circuit connection as per the diagram. In the mobile, download and “Blynq IoT” application using Google play store and Install it. Create log in ID and Password.
@@ -172,8 +133,9 @@ long microsecondsToCentimeters(long microseconds) {
 
 
 # Output:
-<img width="551" height="377" alt="image" src="https://github.com/user-attachments/assets/9811734e-7ff4-431d-ab3d-65ca750ccfd7" />
+
+https://github.com/user-attachments/assets/908e91e9-bda8-4de5-b20c-3dad28c53e73
 
 
 # Result:
-The Home Automation System with IoT successfully enabled remote monitoring and control of home appliances through the internet.
+Thus, Home-Automation-System-with-IOT was successfully implemented using TinkerCad
